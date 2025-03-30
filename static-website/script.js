@@ -114,15 +114,6 @@ function smoothData(data, labels, windowSize) {
 }
 
 function updateChart() {
-    // Store current zoom state if chart exists
-    let zoomState = null;
-    if (chart) {
-        zoomState = {
-            min: chart.scales.x.min,
-            max: chart.scales.x.max
-        };
-    }
-
     const startDate = new Date(document.getElementById('startDate').value);
     const endDate = new Date(document.getElementById('endDate').value);
     
@@ -368,10 +359,7 @@ function updateChart() {
         }
     });
 
-    // After chart is created, restore zoom state if it existed
-    if (zoomState) {
-        chart.zoomScale('x', zoomState);
-    }
+    updateSmoothingIndicator(smoothingWindow);
 }
 
 function updateTable() {
@@ -462,4 +450,22 @@ function updateChartVisibility() {
 function applyDateFilter() {
     updateChart();
     updateTable();
+}
+
+function updateSmoothingIndicator(smoothingWindow) {
+    const container = document.querySelector('.smoothing-indicator');
+    if (!container) {
+        console.error('Smoothing indicator container not found');
+        return;
+    }
+
+    const intervalMap = {
+        '15': '15 points',
+        '10': '10 points',
+        '5': '5 points',
+        '1': 'Raw data'
+    };
+
+    container.textContent = intervalMap[smoothingWindow] || 'Raw data';
+    container.style.display = 'block';
 }
