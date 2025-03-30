@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Data Visualizer</h1>
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" accept=".csv">
+                <label for="fileInput">Upload CSV</label>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div class="data-controls">
+                        <div class="smoothing-control">
+                            <label for="smoothingInterval">Data Smoothing:</label>
+                            <select id="smoothingInterval">
+                                <option value="1">Raw Data</option>
+                                <option value="5">5 Points</option>
+                                <option value="10" selected>10 Points</option>
+                                <option value="15">15 Points</option>
+                            </select>
+                        </div>
+                        <div class="date-picker">
+                            <input type="date" id="startDate">
+                            <span>to</span>
+                            <input type="date" id="endDate">
+                            <button id="applyDateRange">Apply</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-controls">
+                    <div class="legend-container">
+                        <div class="metric-toggles">
+                            <label class="voltage"><input type="checkbox" id="voltageToggle" checked>Voltage</label>
+                            <label class="current"><input type="checkbox" id="currentToggle" checked>Current</label>
+                            <label class="power"><input type="checkbox" id="powerToggle" checked>Power</label>
+                        </div>
+                    </div>
+                    <button id="resetZoom">Reset View</button>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="dataChart"></canvas>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Voltage</th>
+                            <th>Current</th>
+                            <th>Power</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="hover-data" style="position: absolute; display: none; background: white; border: 1px solid black; padding: 5px; z-index: 1000;"></div>
+    <script src="script.js"></script>
+</body>
+</html>
