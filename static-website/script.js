@@ -6,6 +6,43 @@ let chartData = {
     power: []
 };
 
+const translations = {
+    en: {
+        title: 'Data Visualizer',
+        uploadCsv: 'Upload CSV',
+        dataSmoothing: 'Data Smoothing:',
+        rawData: 'Raw Data',
+        points: 'Points',
+        to: 'to',
+        apply: 'Apply',
+        voltage: 'Voltage',
+        current: 'Current',
+        power: 'Power',
+        resetView: 'Reset View',
+        date: 'Date',
+        time: 'Time',
+        noData: 'No data available for selected date range'
+    },
+    fr: {
+        title: 'Visualiseur de Données',
+        uploadCsv: 'Importer CSV',
+        dataSmoothing: 'Lissage des données:',
+        rawData: 'Données brutes',
+        points: 'Points',
+        to: 'à',
+        apply: 'Appliquer',
+        voltage: 'Tension',
+        current: 'Courant',
+        power: 'Puissance',
+        resetView: 'Réinitialiser',
+        date: 'Date',
+        time: 'Heure',
+        noData: 'Aucune donnée disponible pour la période sélectionnée'
+    }
+};
+
+let currentLanguage = 'en';
+
 document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('fileInput');
     const voltageToggle = document.getElementById('voltageToggle');
@@ -29,6 +66,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add reset zoom button listener
     document.getElementById('resetZoom').addEventListener('click', () => {
         if (chart) chart.resetZoom();
+    });
+
+    // Add language toggle listener
+    const languageToggle = document.getElementById('languageToggle');
+    languageToggle.addEventListener('change', () => {
+        currentLanguage = languageToggle.checked ? 'fr' : 'en';
+        updateLanguage();
     });
 });
 
@@ -424,7 +468,7 @@ function updateTable() {
     // Add a message if no data is shown
     if (rowsAdded === 0) {
         const row = document.createElement('tr');
-        row.innerHTML = '<td colspan="5" style="text-align: center;">No data available for selected date range</td>';
+        row.innerHTML = `<td colspan="5" style="text-align: center;">${translations[currentLanguage].noData}</td>`;
         tbody.appendChild(row);
     }
 }
@@ -468,4 +512,46 @@ function updateSmoothingIndicator(smoothingWindow) {
 
     container.textContent = intervalMap[smoothingWindow] || 'Raw data';
     container.style.display = 'block';
+}
+
+function updateLanguage() {
+    const t = translations[currentLanguage];
+    
+    // Update static text
+    document.querySelector('h1').textContent = t.title;
+    document.querySelector('label[for="fileInput"]').textContent = t.uploadCsv;
+    document.querySelector('label[for="smoothingInterval"]').textContent = t.dataSmoothing;
+    document.querySelector('.date-picker span').textContent = t.to;
+    document.getElementById('applyDateRange').textContent = t.apply;
+    document.querySelector('label.voltage').childNodes[1].textContent = t.voltage;
+    document.querySelector('label.current').childNodes[1].textContent = t.current;
+    document.querySelector('label.power').childNodes[1].textContent = t.power;
+    document.getElementById('resetZoom').textContent = t.resetView;
+    
+    // Update table headers
+    const headers = document.querySelectorAll('#dataTable th');
+    headers[0].textContent = t.date;
+    headers[1].textContent = t.time;
+    headers[2].textContent = t.voltage;
+    headers[3].textContent = t.current;
+    headers[4].textContent = t.power;
+    
+    // Update smoothing interval options
+    const smoothingSelect = document.getElementById('smoothingInterval');
+    smoothingSelect.options[0].textContent = t.rawData;
+    for (let i = 1; i < smoothingSelect.options.length; i++) {
+        const points = smoothingSelect.options[i].value;
+        smoothingSelect.options[i].textContent = `${points} ${t.points}`;
+    }
+    
+    // Update chart if it exists
+    if (chart) {
+        chart.options.scales.voltage.title.text = `${t.voltage} (V)`;
+        chart.options.scales.current.title.text = `${t.current} (A)`;
+        chart.options.scales.power.title.text = `${t.power} (W)`;
+        chart.data.datasets[0].label = `${t.voltage} (V)`;
+        chart.data.datasets[1].label = `${t.current} (A)`;
+        chart.data.datasets[2].label = `${t.power} (W)`;
+        chart.update();
+    }
 }
